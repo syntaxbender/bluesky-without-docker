@@ -10,6 +10,7 @@ This doc installs bskypds on your server on a subdomain without docker.
  - bskypds uses websocket on node so configure apache/nginx as reverse socket mod.
  - you need to verify every user subdomain in browser(bsky.app ui)  like username.yoursubdomain.exampledomain.com. if this step is skipped, an "Invalid Handle" error will appear in the username field.
  - created this steps mined from https://github.com/bluesky-social/pds/blob/main/installer.sh
+![image](https://github.com/user-attachments/assets/e7d7b3e5-6108-409e-9a71-8acec37ab870)
 
 ```bash
 root$: apt install -y ca-certificates curl gnupg jq lsb-release openssl sqlite3 xxd
