@@ -1,7 +1,11 @@
+
 # bluesky custom install steps
 This doc installs bskypds on your server on a subdomain without docker.
 
-notes:
+## prerequisites:
+- node18(i prefer)
+- a smtp server like gmail smtp for reset password etc.
+## notes:
  - bskypds uses xrpc on node http backend.
  - bskypds uses websocket on node so configure apache/nginx as reverse socket mod.
  - you need to verify every user subdomain like username.yoursubdomain.exampledomain.com. if this step is skipped, an "Invalid Handle" error will appear in the username field.
@@ -29,17 +33,20 @@ root$: nano /etc/apache2/sites-available/bskypds-ssl.conf
     ServerName social.exampledomain.com
     ServerAlias *.social.exampledomain.com
     DocumentRoot /home/bskypds/public_html
-
+	
+	# websocket upgrade rules
     RewriteEngine On
-    RewriteCond %{HTTP:Upgrade} ^websocket$ [NC]
+    RewriteCond %{HTTP:Upgrade} ^websocket$ [NC] 
     RewriteCond %{HTTP:Connection} Upgrade [NC]
     RewriteRule /(.*)$ ws://127.0.0.1:3030/$1 [P,L]
 
+	# reverse proxy rules
     ProxyPass /xrpc/ http://127.0.0.1:3030/xrpc/
     ProxyPassReverse /xrpc/ http://127.0.0.1:3030/xrpc/
     ProxyRequests off
 
-    <Directory /home/devosgb/public_html>
+	# userspace rules for path based verification(via .well-known/atproto-did file) like username.subdomain.domain.com
+    <Directory /home/bskypds/public_html>
          Options -Indexes
          AllowOverride All
          Require all granted
@@ -59,8 +66,8 @@ root$: nano /etc/apache2/sites-available/bskypds-ssl.conf
 
 ```
 ```bash
-npm install -g pnpm
-nano /etc/systemd/system/pds.service
+root$: npm install -g pnpm
+root$: nano /etc/systemd/system/pds.service
 ```
 ```bash
 [Unit]
@@ -82,10 +89,10 @@ WantedBy=default.target
 root$: sudo su bskypds
 bskypds$: cd /home/bskypds/public_html
 bskypds$: git clone https://github.com/bluesky-social/pds
-cd /home/bskypds/public_html/pds/service
-pnpm install --production --frozen-lockfile
-mkdir -p data/blocks
-nano .env
+bskypds$: cd /home/bskypds/public_html/pds/service
+bskypds$: pnpm install --production --frozen-lockfile
+bskypds$: mkdir -p data/blocks
+bskypds$: nano .env
 ```
 ```bash
 PDS_HOSTNAME="EXAMPLESUBDOMAIN.EXAMPLEDOMAIN.com"
@@ -108,9 +115,9 @@ PDS_EMAIL_SMTP_URL="smtp://YOURGMAILADDRESSFORSMTP@gmail.com:YOURGENERATEDAPPKEY
 PDS_EMAIL_FROM_ADDRESS="YOURGMAILADDRESS@gmail.com"
 ```
 ```bash
-cd /home/bskypds/public_html/pds/pdsadmin
-cp create-invite-code.sh invite_custom.sh
-nano invite_custom.sh
+bskypds$: cd /home/bskypds/public_html/pds/pdsadmin
+bskypds$: cp create-invite-code.sh invite_custom.sh
+bskypds$: nano invite_custom.sh
 
 ```
 ```bash
@@ -118,6 +125,11 @@ nano invite_custom.sh
 PDS_ENV_FILE="/home/bskypds/public_html/pds2/service/.env"  #with this
 ```
 ```bash
-chmod +x invite_custom.sh
-./invite_custom.sh
+bskypds$: chmod +x invite_custom.sh
+bskypds$: exit
+root$: systemctl daemon-reload
+root$: systemctl enable pds
+root$: systemctl start pds
+root$: sudo su bskypds
+bskypds$: ./invite_custom.sh
 
