@@ -134,9 +134,11 @@ root$: systemctl enable pds
 root$: systemctl start pds
 root$: sudo su bskypds
 bskypds$: ./invite_custom.sh
-
+```
 ## verify install
+```bash
 > curl https://example.com/xrpc/_health
 > wsdump "wss://example.com/xrpc/com.atproto.sync.subscribeRepos?cursor=0"
+```
 
 
