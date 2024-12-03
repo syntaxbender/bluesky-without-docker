@@ -1,3 +1,11 @@
+# bluesky custom install steps
+This doc installs bskypds on your server on a subdomain without docker.
+
+notes:
+ - bskypds uses xrpc on node http backend.
+ - bskypds uses websocket on node so configure apache/nginx as reverse socket mod.
+ - you need to verify every user subdomain like username.yoursubdomain.exampledomain.com. if this step is skipped, an "Invalid Handle" error will appear in the username field.
+
 ```bash
 root$: apt install -y ca-certificates curl gnupg jq lsb-release openssl sqlite3 xxd
 root$: sudo a2enmod proxy proxy_http proxy_wstunnel rewrite
