@@ -5,6 +5,7 @@ This doc installs bskypds on your server on a subdomain without docker.
 ## prerequisites:
 - node18(i prefer)
 - a smtp server like gmail smtp for reset password etc.
+- apache2
 ## notes:
  - bskypds uses xrpc on node http backend.
  - bskypds uses websocket on node so configure apache/nginx as reverse socket mod.
